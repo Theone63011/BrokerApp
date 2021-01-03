@@ -14,7 +14,6 @@ class Page2 extends StatefulWidget {
   Page2State createState() => new Page2State();
 }
 
-
 class Page2State extends State<Page2> {
 
   GlobalState _store = GlobalState.instance;
@@ -36,31 +35,47 @@ class Page2State extends State<Page2> {
     _store.set(MyApp.sequenceNumberKey, sequenceNumber);
   }
 
-  static Widget data() {
-    logMsg = "data() called.";
+  @override
+  Widget build(BuildContext context) {
+    logMsg = "build(BuildContext context) called.\n" +
+        MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
     developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
 
     return Scaffold(
       backgroundColor: MyAppColors.blue2,
-      body: Center(
-        child: Column(
+      body: new Container(
+        //padding: EdgeInsets.all(15),
+        alignment: Alignment.center,
+        child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(40),
-              child: Column(
-                children: [
-                  Text(
-                    line1,
-                    style: MyAppTheme.data().textTheme.headline3,
-                    textAlign: TextAlign.center,
-                    softWrap: true,
-                  ),
-                ],
-              )
-            )
+            Text(
+              line1,
+              style: MyAppTheme
+                  .data()
+                  .textTheme
+                  .headline3,
+              textAlign: TextAlign.center,
+              softWrap: true,
+            ),
           ],
         ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.arrow_forward_ios),
+        backgroundColor: MyAppColors.green1,
+        onPressed: () {
+          logMsg = "onPressed() called.\n" +
+              MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
+          developer.log(
+              className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Page3()),
+          );
+        },
       ),
     );
   }

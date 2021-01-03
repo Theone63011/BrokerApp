@@ -14,7 +14,6 @@ class Page1 extends StatefulWidget {
   Page1State createState() => new Page1State();
 }
 
-
 class Page1State extends State<Page1> {
 
   GlobalState _store = GlobalState.instance;
@@ -111,6 +110,9 @@ class Page1State extends State<Page1> {
               context,
               MaterialPageRoute(builder: (context) => Page2()),
           );
+
+          // TODO: How to go back to previous navigator transition
+          //Navigator.pop(context);
         },
       ),
     );
