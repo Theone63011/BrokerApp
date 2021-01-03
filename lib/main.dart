@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
   static final theme = MyAppTheme.data();
   static const String title = "ReviRE";
   static const String titleKey = "title";
+  static const String selectedUserTypeKey = "selectedUserType";
   static int sequenceNumber = 0;
   static const String sequenceNumberKey = "sequenceNumber";
   static final String NOTSET = "NOTSET";

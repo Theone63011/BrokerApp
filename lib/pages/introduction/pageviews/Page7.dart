@@ -42,6 +42,7 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     userSelected = false;
+    selectedUser = _store.get(MyApp.selectedUserTypeKey);
     _store.set(classNameKey, className);
     title = _store.get(MyApp.titleKey);
     sequenceNumber = _store.get(MyApp.sequenceNumberKey);
@@ -87,7 +88,11 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
                     MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
                 developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
 
-                setState(() { selectedUser = currentUser; userSelected = true; });
+                setState(() {
+                  selectedUser = currentUser;
+                  userSelected = true;
+                  _store.set(MyApp.selectedUserTypeKey, selectedUser);
+                });
               },
             ),
             RadioListTile(
@@ -101,7 +106,11 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
                     MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
                 developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
 
-                setState(() { selectedUser = currentUser;  userSelected = true; });
+                setState(() {
+                  selectedUser = currentUser;
+                  userSelected = true;
+                  _store.set(MyApp.selectedUserTypeKey, selectedUser);
+                });
               },
             ),
             Visibility(
