@@ -33,4 +33,16 @@ class MyAppTheme {
       //visualDensity: VisualDensity.adaptivePlatformDensity,
     );
   }
+
+  static ThemeData titleTheme() {
+    return ThemeData(
+      fontFamily: "SFRegular",
+      brightness: Brightness.dark,
+      textTheme: TextTheme(
+        headline1: TextStyle(color: Colors.white, fontSize: 50.0, fontWeight: FontWeight.bold, fontFamily: 'Roboto',
+            shadows: shadows),
+      ),
+      primarySwatch: MyAppColors.blue1
+    );
+  }
 }
