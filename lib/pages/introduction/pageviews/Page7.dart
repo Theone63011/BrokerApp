@@ -15,7 +15,7 @@ class Page7 extends StatefulWidget {
   Page7State createState() => new Page7State();
 }
 
-enum UserTypes {
+enum UserType {
   BuyerSeller,
   BrokerAgent,
 }
@@ -30,45 +30,110 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
   static String title = MyApp.NOTSET;
   static int sequenceNumber = -1;
   static String logMsg = MyApp.EMPTY;
+  static String line1 = "Before we start, please tell us\nAre you a";
 
-  int selectedRadio;
-  int selectedRadioTile;
-
-  UserTypes selectedUser = UserTypes.BuyerSeller;
+  UserType selectedUser;
+  bool userSelected;
 
   static double radioListIconSize = 25.0;
   static MaterialColor selectedRadioColor = MyAppColors.yellow1;
 
-  bool loading = true;
-  AsyncSnapshot asyncSnapshot;
-
   @override
   void initState() {
-    _animationController = AnimationController(
-        vsync: this,
-        duration: Duration(milliseconds: 150)
-    );
-    _animationController.forward();
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
+    userSelected = false;
+    _store.set(classNameKey, className);
+    title = _store.get(MyApp.titleKey);
+    sequenceNumber = _store.get(MyApp.sequenceNumberKey);
+    sequenceNumber++;
+    _store.set(MyApp.sequenceNumberKey, sequenceNumber);
   }
 
   @override
   Widget build(BuildContext context) {
+    logMsg = "build(BuildContext context) called.\n" +
+        MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
+    developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
+
     return Scaffold(
-      appBar: AppBar(
+      /*appBar: AppBar(
         title: Text("ReviRe TEST AppBar"),
         centerTitle: true,
-      ),
-      body: Stack(
-        children: <Widget>[
-          //TextAndButtons(animationController: _animationController,),
-        ],
+      ),*/
+      backgroundColor: MyAppColors.blue2,
+      body: new Container(
+        alignment: Alignment.center,
+        padding: EdgeInsets.all(20.0),
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              line1,
+              style: MyAppTheme
+                  .data()
+                  .textTheme
+                  .headline3,
+              textAlign: TextAlign.center,
+              softWrap: true,
+            ),
+            RadioListTile(
+              title: Text("Buyer/Seller"),
+              value: UserType.BuyerSeller,
+              groupValue: selectedUser,
+              activeColor: MyAppColors.yellow1,
+              onChanged: (currentUser){
+                logMsg = "onChanged(currentUser) called.\n"
+                    "currentUser - [" + currentUser.toString() + "]" +
+                    MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
+                developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
+
+                setState(() { selectedUser = currentUser; userSelected = true; });
+              },
+            ),
+            RadioListTile(
+              title: Text("Broker/Agent"),
+              value: UserType.BrokerAgent,
+              groupValue: selectedUser,
+              activeColor: MyAppColors.yellow1,
+              onChanged: (currentUser){
+                logMsg = "onChanged(currentUser) called.\n"
+                    "currentUser - [" + currentUser.toString() + "]" +
+                    MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
+                developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
+
+                setState(() { selectedUser = currentUser;  userSelected = true; });
+              },
+            ),
+            Visibility(
+              visible: userSelected,
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: AnimatedOpacity(
+                  opacity: userSelected == true ? 1.0 : 0.0,
+                  duration: Duration(milliseconds: 500),
+                  child: Container(
+                    alignment: Alignment.bottomRight,
+                    child: FloatingActionButton(
+                        child: Icon(Icons.arrow_forward_ios),
+                        backgroundColor: MyAppColors.green1,
+                        onPressed: () {
+                          logMsg = "onPressed() called.\n" +
+                              MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
+                          developer.log(
+                              className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
+
+                          //Navigator.push(
+                          //  context,
+                          //  MaterialPageRoute(builder: (context) => Page6()),
+                          //);
+                        },
+                    )
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
