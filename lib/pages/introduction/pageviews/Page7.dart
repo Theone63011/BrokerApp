@@ -5,7 +5,9 @@ import 'package:revire/theme/MyAppTheme.dart';
 import 'package:revire/theme/MyAppColors.dart';
 import 'package:revire/LogLevels.dart';
 import 'package:revire/main.dart';
+import 'package:revire/constants/Constants.dart';
 import 'package:revire/constants/GlobalState.dart';
+import 'package:revire/pages/login/MainLogin.dart';
 import 'dart:developer' as developer;
 
 class Page7 extends StatefulWidget {
@@ -27,9 +29,9 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
   GlobalState _store = GlobalState.instance;
   static String className = "[Page7State]";
   static String classNameKey = "Page7State";
-  static String title = MyApp.NOTSET;
+  static String title = Constants.NOTSET;
   static int sequenceNumber = -1;
-  static String logMsg = MyApp.EMPTY;
+  static String logMsg = Constants.EMPTY;
   static String line1 = "Before we start, please tell us\nAre you a";
 
   UserType selectedUser;
@@ -42,18 +44,18 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     userSelected = false;
-    selectedUser = _store.get(MyApp.selectedUserTypeKey);
+    selectedUser = _store.get(Constants.selectedUserTypeKey);
     _store.set(classNameKey, className);
-    title = _store.get(MyApp.titleKey);
-    sequenceNumber = _store.get(MyApp.sequenceNumberKey);
+    title = _store.get(Constants.titleKey);
+    sequenceNumber = _store.get(Constants.sequenceNumberKey);
     sequenceNumber++;
-    _store.set(MyApp.sequenceNumberKey, sequenceNumber);
+    _store.set(Constants.sequenceNumberKey, sequenceNumber);
   }
 
   @override
   Widget build(BuildContext context) {
     logMsg = "build(BuildContext context) called.\n" +
-        MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
+        Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
     developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
 
     return Scaffold(
@@ -85,13 +87,13 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
               onChanged: (currentUser){
                 logMsg = "onChanged(currentUser) called.\n"
                     "currentUser - [" + currentUser.toString() + "]" +
-                    MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
+                    Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
                 developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
 
                 setState(() {
                   selectedUser = currentUser;
                   userSelected = true;
-                  _store.set(MyApp.selectedUserTypeKey, selectedUser);
+                  _store.set(Constants.selectedUserTypeKey, selectedUser);
                 });
               },
             ),
@@ -103,13 +105,13 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
               onChanged: (currentUser){
                 logMsg = "onChanged(currentUser) called.\n"
                     "currentUser - [" + currentUser.toString() + "]" +
-                    MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
+                    Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
                 developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
 
                 setState(() {
                   selectedUser = currentUser;
                   userSelected = true;
-                  _store.set(MyApp.selectedUserTypeKey, selectedUser);
+                  _store.set(Constants.selectedUserTypeKey, selectedUser);
                 });
               },
             ),
@@ -127,14 +129,14 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
                         backgroundColor: MyAppColors.green1,
                         onPressed: () {
                           logMsg = "onPressed() called.\n" +
-                              MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
+                              Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
                           developer.log(
                               className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
 
-                          //Navigator.push(
-                          //  context,
-                          //  MaterialPageRoute(builder: (context) => Page6()),
-                          //);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => MainLogin()),
+                          );
                         },
                     )
                   ),

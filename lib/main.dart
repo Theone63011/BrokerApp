@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:revire/constants/Constants.dart';
 import 'package:revire/constants/GlobalState.dart';
 import 'package:revire/theme/MyAppColors.dart';
 import 'package:revire/theme/MyAppTheme.dart';
@@ -21,23 +22,17 @@ void main() => runApp(new MaterialApp(home: new MyApp(),));
 class MyApp extends StatelessWidget {
 
   static final theme = MyAppTheme.data();
-  static const String title = "ReviRE";
-  static const String titleKey = "title";
-  static const String selectedUserTypeKey = "selectedUserType";
   static int sequenceNumber = 0;
-  static const String sequenceNumberKey = "sequenceNumber";
-  static final String NOTSET = "NOTSET";
-  static final String EMPTY = "EMPTY";
   GlobalState _store = GlobalState.instance;
 
   @override
   Widget build(BuildContext context) {
 
-    _store.set(titleKey, title);
-    _store.set(sequenceNumberKey, sequenceNumber);
+    _store.set(Constants.titleKey, Constants.title);
+    _store.set(Constants.sequenceNumberKey, sequenceNumber);
 
     return MaterialApp(
-      title: title,
+      title: Constants.title,
       theme: theme,
       //routes: <String, WidgetBuilder>{
       //  Page1State.classNameKey: (BuildContext context) => new Page1(),

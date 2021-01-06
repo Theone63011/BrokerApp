@@ -3,6 +3,7 @@ import 'package:revire/main.dart';
 import 'package:revire/theme/MyAppTheme.dart';
 import 'package:revire/theme/MyAppColors.dart';
 import 'package:revire/LogLevels.dart';
+import 'package:revire/constants/Constants.dart';
 import 'package:revire/constants/GlobalState.dart';
 import 'package:revire/pages/introduction/pageviews/Page2.dart';
 import 'dart:developer' as developer;
@@ -26,9 +27,9 @@ class Page1State extends State<Page1> {
 
   static String className = "[Page1State]";
   static String classNameKey = "Page1State";
-  static String title = MyApp.NOTSET;
+  static String title = Constants.NOTSET;
   static int sequenceNumber = -1;
-  static String logMsg = MyApp.EMPTY;
+  static String logMsg = Constants.EMPTY;
 
   static String line1 = "Welcome To";
   static String line2 = title;
@@ -43,10 +44,10 @@ class Page1State extends State<Page1> {
   void initState() {
     super.initState();
     _store.set(classNameKey, className);
-    title = _store.get(MyApp.titleKey);
-    sequenceNumber = _store.get(MyApp.sequenceNumberKey);
+    title = _store.get(Constants.titleKey);
+    sequenceNumber = _store.get(Constants.sequenceNumberKey);
     sequenceNumber++;
-    _store.set(MyApp.sequenceNumberKey, sequenceNumber);
+    _store.set(Constants.sequenceNumberKey, sequenceNumber);
 
     //_pageController = PageController();
 
@@ -75,7 +76,7 @@ class Page1State extends State<Page1> {
   @override
   Widget build(BuildContext context) {
     logMsg = "build(BuildContext context) called.\n" +
-        MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
+        Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
     developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
 
     return Scaffold(
@@ -103,7 +104,7 @@ class Page1State extends State<Page1> {
         backgroundColor: MyAppColors.green1,
         onPressed: (){
           logMsg = "onPressed() called.\n" +
-              MyApp.sequenceNumberKey + ": " + sequenceNumber.toString();
+              Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
           developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
 
           Navigator.push(
