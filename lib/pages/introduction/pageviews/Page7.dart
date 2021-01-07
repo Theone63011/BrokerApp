@@ -17,11 +17,6 @@ class Page7 extends StatefulWidget {
   Page7State createState() => new Page7State();
 }
 
-enum UserType {
-  BuyerSeller,
-  BrokerAgent,
-}
-
 class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
 
   AnimationController _animationController;
@@ -34,7 +29,7 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
   static String logMsg = Constants.EMPTY;
   static String line1 = "Before we start, please tell us\nAre you a";
 
-  UserType selectedUser;
+  String selectedUser;
   bool userSelected;
 
   static double radioListIconSize = 25.0;
@@ -45,6 +40,17 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
     super.initState();
     userSelected = false;
     selectedUser = _store.get(Constants.selectedUserTypeKey);
+
+    if (selectedUser != null) {
+      if (selectedUser == Constants.buyerSellerType || selectedUser == Constants.brokerAgentType) {
+        logMsg = "initState()- user has already been selected.\n" +
+            Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
+        developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
+
+        userSelected = true;
+      }
+    }
+
     _store.set(classNameKey, className);
     title = _store.get(Constants.titleKey);
     sequenceNumber = _store.get(Constants.sequenceNumberKey);
@@ -80,8 +86,8 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
               softWrap: true,
             ),
             RadioListTile(
-              title: Text("Buyer/Seller"),
-              value: UserType.BuyerSeller,
+              title: Text(Constants.buyerSellerString),
+              value: Constants.buyerSellerType,
               groupValue: selectedUser,
               activeColor: MyAppColors.yellow1,
               onChanged: (currentUser){
@@ -98,8 +104,8 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
               },
             ),
             RadioListTile(
-              title: Text("Broker/Agent"),
-              value: UserType.BrokerAgent,
+              title: Text(Constants.brokerAgentString),
+              value: Constants.brokerAgentType,
               groupValue: selectedUser,
               activeColor: MyAppColors.yellow1,
               onChanged: (currentUser){

@@ -7,7 +7,9 @@ class Constants {
   static const String titleKey = "title";
   static const String selectedUserTypeKey = "selectedUserType";
   static const String buyerSellerType = "buyerSeller";
+  static const String buyerSellerString = "Buyer/Seller";
   static const String brokerAgentType = "brokerAgent";
+  static const String brokerAgentString = "Broker/Agent";
   static const String sequenceNumberKey = "sequenceNumber";
   static final String NOTSET = "NOTSET";
   static final String EMPTY = "EMPTY";
