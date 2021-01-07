@@ -6,6 +6,7 @@ import 'package:revire/theme/MyAppColors.dart';
 import 'package:revire/LogLevels.dart';
 import 'package:revire/constants/Constants.dart';
 import 'package:revire/constants/GlobalState.dart';
+import 'package:revire/pages/login/MainSignUp.dart';
 import 'dart:developer' as developer;
 
 class MainLogin extends StatefulWidget {
@@ -38,7 +39,7 @@ class MainLoginState extends State<MainLogin> {
     _store.set(Constants.sequenceNumberKey, sequenceNumber);
   }
 
-  double getTitleDistanceFromTop(BuildContext context) {
+  static double getTitleDistanceFromTop(BuildContext context) {
     return MediaQuery.of(context).size.height * 0.25;
   }
 
@@ -117,7 +118,13 @@ class MainLoginState extends State<MainLogin> {
                           Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
                       developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
 
+
                       Constants.showInProgressDialog(context);
+
+                      /*Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MainSignUp()),
+                      );*/
                     },
                     textColor: Colors.white,
                     padding: EdgeInsets.all(2.0),

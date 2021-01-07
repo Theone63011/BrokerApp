@@ -93,7 +93,7 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
                 setState(() {
                   selectedUser = currentUser;
                   userSelected = true;
-                  _store.set(Constants.selectedUserTypeKey, selectedUser);
+                  _store.set(Constants.selectedUserTypeKey, Constants.buyerSellerType);
                 });
               },
             ),
@@ -111,7 +111,7 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
                 setState(() {
                   selectedUser = currentUser;
                   userSelected = true;
-                  _store.set(Constants.selectedUserTypeKey, selectedUser);
+                  _store.set(Constants.selectedUserTypeKey, Constants.brokerAgentType);
                 });
               },
             ),

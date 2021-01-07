@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:revire/pages/login/MainLogin.dart';
 
 class Constants {
 
   static const String title = "ReviRE";
   static const String titleKey = "title";
   static const String selectedUserTypeKey = "selectedUserType";
+  static const String buyerSellerType = "buyerSeller";
+  static const String brokerAgentType = "brokerAgent";
   static const String sequenceNumberKey = "sequenceNumber";
   static final String NOTSET = "NOTSET";
   static final String EMPTY = "EMPTY";
