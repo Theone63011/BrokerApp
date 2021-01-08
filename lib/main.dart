@@ -17,6 +17,9 @@ import 'package:revire/pages/introduction/pageviews/Page5.dart';
 import 'package:revire/pages/introduction/pageviews/Page6.dart';
 import 'package:revire/pages/introduction/pageviews/Page7.dart';
 
+import 'package:flutter_login/flutter_login.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
 //void main() => runApp(MyApp());
 void main() => runApp(new MaterialApp(home: new MyApp(),));
 

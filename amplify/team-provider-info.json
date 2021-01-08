@@ -10,6 +10,15 @@
             "StackName": "amplify-revire-dev-182202",
             "StackId": "arn:aws:cloudformation:us-east-2:206325173947:stack/amplify-revire-dev-182202/2891b7c0-513f-11eb-aea1-0281aed4af26",
             "AmplifyAppId": "d2zyhavxtt4j9g"
+        },
+        "categories": {
+            "function": {
+                "revire865415a7DefineAuthChallenge": {},
+                "revire865415a7CreateAuthChallenge": {}
+            },
+            "auth": {
+                "reviree1bd2277": {}
+            }
         }
     }
 }

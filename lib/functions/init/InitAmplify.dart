@@ -1,4 +1,5 @@
 import 'package:amplify_core/amplify_core.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:revire/amplifyconfiguration.dart';
 import 'package:flutter/material.dart';
 import 'package:revire/constants/Constants.dart';
@@ -36,7 +37,11 @@ class InitAmplify {
     _store.set(amplifyInstanceKey, amplifyInstance);
 
     try {
+      AmplifyAuthCognito authCognito = AmplifyAuthCognito();
+      amplifyInstance.addPlugin(authPlugins: [authCognito]);
       await amplifyInstance.configure(amplifyconfig);
+
+
       logMsg = "amplifyInstance successfully configured.\n" +
           Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
       developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);

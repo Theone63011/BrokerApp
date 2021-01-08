@@ -11,14 +11,14 @@ import 'dart:developer' as developer;
 
 class Init {
 
-  GlobalState _store = GlobalState.instance;
+  static GlobalState _store = GlobalState.instance;
   static String className = "[Init]";
   static String classNameKey = "Init";
   static String title = Constants.NOTSET;
   static int sequenceNumber = -1;
   static String logMsg = Constants.EMPTY;
 
-  Future<bool> init() async {
+  static Future<bool> init() async {
     logMsg = "init() has been called.\n" +
         Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
     developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
@@ -37,7 +37,7 @@ class Init {
     return true;
   }
 
-  Future<bool> initAmplify() async {
+  static Future<bool> initAmplify() async {
     logMsg = "initAmplify() has been called.\n" +
         Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
     developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
