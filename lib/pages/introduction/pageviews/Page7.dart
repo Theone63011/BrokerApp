@@ -19,8 +19,6 @@ class Page7 extends StatefulWidget {
 
 class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
 
-  AnimationController _animationController;
-
   GlobalState _store = GlobalState.instance;
   static String className = "[Page7State]";
   static String classNameKey = "Page7State";

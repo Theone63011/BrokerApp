@@ -1,0 +1,15 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-revire-dev-182202-authRole",
+            "UnauthRoleArn": "arn:aws:iam::206325173947:role/amplify-revire-dev-182202-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::206325173947:role/amplify-revire-dev-182202-authRole",
+            "Region": "us-east-2",
+            "DeploymentBucketName": "amplify-revire-dev-182202-deployment",
+            "UnauthRoleName": "amplify-revire-dev-182202-unauthRole",
+            "StackName": "amplify-revire-dev-182202",
+            "StackId": "arn:aws:cloudformation:us-east-2:206325173947:stack/amplify-revire-dev-182202/2891b7c0-513f-11eb-aea1-0281aed4af26",
+            "AmplifyAppId": "d2zyhavxtt4j9g"
+        }
+    }
+}
