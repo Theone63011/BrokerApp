@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:revire/main.dart';
 import 'package:revire/theme/MyAppTheme.dart';
 import 'package:revire/theme/MyAppColors.dart';
-import 'package:revire/LogLevels.dart';
+import 'package:revire/Logging.dart';
 import 'package:revire/constants/Constants.dart';
-import 'package:revire/constants/GlobalState.dart';
 import 'package:revire/pages/introduction/pageviews/Page2.dart';
-import 'dart:developer' as developer;
 
 class Page1 extends StatefulWidget {
   Page1({Key key}) : super(key: key);
@@ -16,68 +13,21 @@ class Page1 extends StatefulWidget {
 }
 
 class Page1State extends State<Page1> {
-
-  GlobalState _store = GlobalState.instance;
-
-  //PageController _pageController;
-
-  /*TODO: Used for text input box
-  final textController = TextEditingController();
-  */
-
-  static String className = "[Page1State]";
-  static String classNameKey = "Page1State";
-  static String title = Constants.NOTSET;
-  static int sequenceNumber = -1;
-  static String logMsg = Constants.EMPTY;
+  static String className = (Page1State).toString();
+  static Logging log = new Logging(className);
 
   static String line1 = "Welcome To";
-  static String line2 = title;
-
-  // TODO: Sample logging message
-  /*
-  logMsg = "[Placeholder]";
-  developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
-  */
+  static String line2 = Constants.title;
 
   @override
   void initState() {
     super.initState();
-    _store.set(classNameKey, className);
-    title = _store.get(Constants.titleKey);
-    sequenceNumber = _store.get(Constants.sequenceNumberKey);
-    sequenceNumber++;
-    _store.set(Constants.sequenceNumberKey, sequenceNumber);
-
-    //_pageController = PageController();
-
-    // TODO: Used for text input box
-    /*textController.addListener(() {
-      final text = textController.text.toLowerCase();
-      textController.value = textController.value.copyWith(
-        text: text,
-        selection:
-          TextSelection(baseOffset: text.length, extentOffset: text.length),
-        composing: TextRange.empty,
-      );
-    });*/
+    log.info("initState() called.");
   }
-
-
-  /*@override
-  void dispose() {
-    // TODO: Used for text input box
-    //textController.dispose();
-
-    _pageController.dispose();
-    super.dispose();
-  }*/
 
   @override
   Widget build(BuildContext context) {
-    logMsg = "build(BuildContext context) called.\n" +
-        Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
-    developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
+    log.info("build(BuildContext context) called.");
 
     return Scaffold(
       backgroundColor: MyAppColors.blue2,
@@ -103,10 +53,7 @@ class Page1State extends State<Page1> {
         child: Icon(Icons.arrow_forward_ios),
         backgroundColor: MyAppColors.green1,
         onPressed: (){
-          logMsg = "onPressed() called.\n" +
-              Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
-          developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
-
+          log.info("onPressed() called.");
           Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => Page2()),

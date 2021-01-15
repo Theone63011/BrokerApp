@@ -1,13 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:revire/main.dart';
 import 'package:revire/theme/MyAppTheme.dart';
 import 'package:revire/theme/MyAppColors.dart';
-import 'package:revire/LogLevels.dart';
+import 'package:revire/Logging.dart';
 import 'package:revire/constants/Constants.dart';
-import 'package:revire/constants/GlobalState.dart';
 import 'package:revire/pages/login/MainLogin.dart';
-import 'dart:developer' as developer;
 
 class MainSignUp extends StatefulWidget {
   MainSignUp({Key key}) : super(key: key);
@@ -17,14 +14,8 @@ class MainSignUp extends StatefulWidget {
 }
 
 class MainSignUpState extends State<MainSignUp> {
-
-  GlobalState _store = GlobalState.instance;
-
-  static String className = "[MainSignUpState]";
-  static String classNameKey = "MainSignUpState";
-  static String title = Constants.NOTSET;
-  static int sequenceNumber = -1;
-  static String logMsg = Constants.EMPTY;
+  static String className = (MainSignUpState).toString();
+  static Logging log = new Logging(className);
 
   static String loginText = "Login";
   static String signUpText = "Sign up";
@@ -32,19 +23,12 @@ class MainSignUpState extends State<MainSignUp> {
   @override
   void initState() {
     super.initState();
-    _store.set(classNameKey, className);
-    title = _store.get(Constants.titleKey);
-    sequenceNumber = _store.get(Constants.sequenceNumberKey);
-    sequenceNumber++;
-    _store.set(Constants.sequenceNumberKey, sequenceNumber);
+    log.info("initState() called.");
   }
 
   @override
   Widget build(BuildContext context) {
-    logMsg = "build(BuildContext context) called.\n" +
-        Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
-    developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
-
+    log.info("build(BuildContext context) called.");
     return Scaffold(
       backgroundColor: MyAppColors.blue2,
       body: Column(
@@ -61,7 +45,7 @@ class MainSignUpState extends State<MainSignUp> {
               alignment: Alignment.topCenter,
               child:
               Text(
-                title,
+                Constants.title,
                 style: MyAppTheme.titleTheme().textTheme.headline1,
                 textAlign: TextAlign.start,
               ),

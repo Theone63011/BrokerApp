@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:revire/theme/MyAppTheme.dart';
 import 'package:revire/theme/MyAppColors.dart';
-import 'package:revire/LogLevels.dart';
-import 'package:revire/main.dart';
+import 'package:revire/Logging.dart';
 import 'package:revire/constants/Constants.dart';
-import 'package:revire/constants/GlobalState.dart';
 import 'package:revire/pages/introduction/pageviews/Page7.dart';
-import 'dart:developer' as developer;
 
 class Page6 extends StatefulWidget {
   Page6({Key key}) : super(key: key);
@@ -16,34 +13,24 @@ class Page6 extends StatefulWidget {
 }
 
 class Page6State extends State<Page6> {
+  static String className = (Page6State).toString();
+  static Logging log = new Logging(className);
 
-  GlobalState _store = GlobalState.instance;
-  static String className = "[Page6State]";
-  static String classNameKey = "Page6State";
-  static String title = Constants.NOTSET;
-  static int sequenceNumber = -1;
-  static String logMsg = Constants.EMPTY;
-
-  static String line1 = "We hope that your experience with " + title + " is as valuable as the memories made in your "
+  static String line1 = "We hope that your experience with " + Constants.title + " is as valuable as the memories made "
+      "in your "
       "home.";
   static String line2 = "\n\n\n\n\n\n- sincerely";
-  static String line3 = "The " + title + " Team";
+  static String line3 = "The " + Constants.title + " Team";
 
   @override
   void initState() {
     super.initState();
-    _store.set(classNameKey, className);
-    title = _store.get(Constants.titleKey);
-    sequenceNumber = _store.get(Constants.sequenceNumberKey);
-    sequenceNumber++;
-    _store.set(Constants.sequenceNumberKey, sequenceNumber);
+    log.info("initState() called.");
   }
 
   @override
   Widget build(BuildContext context) {
-    logMsg = "build(BuildContext context) called.\n" +
-        Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
-    developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
+    log.info("build(BuildContext context) called.");
 
     return Scaffold(
       backgroundColor: MyAppColors.blue2,
@@ -88,11 +75,7 @@ class Page6State extends State<Page6> {
         child: Icon(Icons.arrow_forward_ios),
         backgroundColor: MyAppColors.green1,
         onPressed: () {
-          logMsg = "onPressed() called.\n" +
-              Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
-          developer.log(
-              className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
-
+          log.info("onPressed() called.");
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Page7()),

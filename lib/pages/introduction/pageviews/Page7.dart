@@ -1,14 +1,11 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:revire/theme/MyAppTheme.dart';
 import 'package:revire/theme/MyAppColors.dart';
-import 'package:revire/LogLevels.dart';
-import 'package:revire/main.dart';
+import 'package:revire/Logging.dart';
 import 'package:revire/constants/Constants.dart';
 import 'package:revire/constants/GlobalState.dart';
 import 'package:revire/pages/login/MainLogin.dart';
-import 'dart:developer' as developer;
 
 class Page7 extends StatefulWidget {
   Page7({Key key}) : super(key: key);
@@ -20,11 +17,8 @@ class Page7 extends StatefulWidget {
 class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
 
   GlobalState _store = GlobalState.instance;
-  static String className = "[Page7State]";
-  static String classNameKey = "Page7State";
-  static String title = Constants.NOTSET;
-  static int sequenceNumber = -1;
-  static String logMsg = Constants.EMPTY;
+  static String className = (Page7State).toString();
+  static Logging log = new Logging(className);
   static String line1 = "Before we start, please tell us\nAre you a";
 
   String selectedUser;
@@ -36,31 +30,21 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    log.info("initState() called.");
     userSelected = false;
     selectedUser = _store.get(Constants.selectedUserTypeKey);
 
     if (selectedUser != null) {
       if (selectedUser == Constants.buyerSellerType || selectedUser == Constants.brokerAgentType) {
-        logMsg = "initState()- user has already been selected.\n" +
-            Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
-        developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
-
+        log.info("initState()- user has already been selected.");
         userSelected = true;
       }
     }
-
-    _store.set(classNameKey, className);
-    title = _store.get(Constants.titleKey);
-    sequenceNumber = _store.get(Constants.sequenceNumberKey);
-    sequenceNumber++;
-    _store.set(Constants.sequenceNumberKey, sequenceNumber);
   }
 
   @override
   Widget build(BuildContext context) {
-    logMsg = "build(BuildContext context) called.\n" +
-        Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
-    developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
+    log.info("build(BuildContext context) called.");
 
     return Scaffold(
       /*appBar: AppBar(
@@ -89,11 +73,7 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
               groupValue: selectedUser,
               activeColor: MyAppColors.yellow1,
               onChanged: (currentUser){
-                logMsg = "onChanged(currentUser) called.\n"
-                    "currentUser - [" + currentUser.toString() + "]" +
-                    Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
-                developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
-
+                log.info("onChanged(currentUser) called. currentUser - [" + currentUser.toString() + "]");
                 setState(() {
                   selectedUser = currentUser;
                   userSelected = true;
@@ -107,11 +87,7 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
               groupValue: selectedUser,
               activeColor: MyAppColors.yellow1,
               onChanged: (currentUser){
-                logMsg = "onChanged(currentUser) called.\n"
-                    "currentUser - [" + currentUser.toString() + "]" +
-                    Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
-                developer.log(className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
-
+                log.info("onChanged(currentUser) called. currentUser - [" + currentUser.toString() + "]");
                 setState(() {
                   selectedUser = currentUser;
                   userSelected = true;
@@ -132,11 +108,7 @@ class Page7State extends State<Page7> with SingleTickerProviderStateMixin {
                         child: Icon(Icons.arrow_forward_ios),
                         backgroundColor: MyAppColors.green1,
                         onPressed: () {
-                          logMsg = "onPressed() called.\n" +
-                              Constants.sequenceNumberKey + ": " + sequenceNumber.toString();
-                          developer.log(
-                              className + logMsg, time: DateTime.now(), sequenceNumber: sequenceNumber, level: LogLevels.info);
-
+                          log.info("onPressed() called.");
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => MainLogin()),
