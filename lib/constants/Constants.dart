@@ -17,6 +17,7 @@ class Constants {
   static final String amplifyInstanceKey = "amplifyInstance";
   static final String signUpCompleteKey = "signUpComplete";
   static final String loginCompleteKey = "loginComplete";
+  static final String loginDataKey = "loginData";
 
   static GlobalState _store = GlobalState.instance;
 

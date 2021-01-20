@@ -8,9 +8,7 @@ import 'package:revire/Logging.dart';
 import 'package:revire/constants/Constants.dart';
 import 'package:revire/constants/GlobalState.dart';
 import 'package:flutter_login/flutter_login.dart';
-import 'package:revire/theme/MyAppColors.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:revire/pages/introduction/MyHomePage.dart';
+import 'package:revire/pages/login/SignUpConfirmation.dart';
 
 class MainLogin extends StatefulWidget {
   MainLogin({Key key}) : super(key: key);
@@ -79,6 +77,7 @@ class MainLoginState extends State<MainLogin> {
 
   Future<String> signUp(LoginData data) async {
     log.info("signUp(LoginData data) called.");
+    _store.set(Constants.loginDataKey, data);
     try {
 
       //TODO- Add more user attributes here- like phone #, address, etc.
@@ -92,7 +91,21 @@ class MainLoginState extends State<MainLogin> {
 
         if(signUpComplete) {
           log.info("Sign Up Complete.");
-          _store.set(Constants.signUpCompleteKey, true);
+
+          String attrName = res.nextStep.codeDeliveryDetails.attributeName;
+          String dest = res.nextStep.codeDeliveryDetails.destination;
+          String delivMed = res.nextStep.codeDeliveryDetails.deliveryMedium;
+          log.info("Code delivery details:\n\tattribute name: " + attrName + "\n\tdestination: " + dest + "\n"
+              "\tdelivery medium: " + delivMed);
+          //Map<dynamic, dynamic> items = res.nextStep.additionalInfo;
+          //int itemSize = res.nextStep.additionalInfo.length;
+          //log.info("Additional Info map items [item count = " + itemSize.toString() + "] :");
+          //items.forEach((key, value) => log.info("key- " + key.toString() + ", value- " + value.toString()));
+          
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SignUpConfirmation()),
+          );
           return null;
         } else {
           log.warn("Sign up FAILED.");
@@ -101,8 +114,8 @@ class MainLoginState extends State<MainLogin> {
         }
       //});
     } on AuthError catch (error) {
-      log.error("exception caught in [signUp] - \n" + error.toString() + "\n");
-      return "Sign up FAILED! Exception caught-\n" + error.toString();
+      log.error("Sign up FAILED. cause = " + error.toString());
+      return "Sign up FAILED!";
     }
   }
 
