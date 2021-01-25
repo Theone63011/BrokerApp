@@ -15,7 +15,7 @@ class Constants {
   static final String NOTSET = "NOTSET";
   static final String EMPTY = "EMPTY";
   static final String amplifyInstanceKey = "amplifyInstance";
-  static final String signUpCompleteKey = "signUpComplete";
+  static final String signUpConfirmedKey = "signUpConfirmed";
   static final String loginCompleteKey = "loginComplete";
   static final String loginDataKey = "loginData";
 
@@ -59,6 +59,47 @@ class Constants {
             actions: <Widget>[
               new FlatButton(
                 child: new Text("Close"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+  static void showDialog_OkayOption(BuildContext context, String title, String body) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog (
+            title: new Text(title),
+            content: new Text(body),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Okay"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+  static void showDialog_UnexpectedError(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog (
+            title: new Text("System Error"),
+            content: new Text("ERROR! An unexpected system error occurred. Please restart the app and try again. If "
+                "the issues persists, please contact a system administrator."),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("Okay"),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },

@@ -10,6 +10,9 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_core/amplify_core.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:revire/widgets/NumberPad.dart';
+import 'package:amazon_cognito_identity_dart_2/cognito.dart';
+import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
+
 
 class SignUpConfirmation extends StatefulWidget {
   SignUpConfirmation({Key key}) : super(key: key);
@@ -40,7 +43,7 @@ class SignUpConfirmationState extends State<SignUpConfirmation> {
   bool checkInitialState() {
     log.info("checkInitialState() called.");
     bool loggedIn = _store.get(Constants.loginCompleteKey);
-    bool signedUp = _store.get(Constants.signUpCompleteKey);
+    bool signedUp = _store.get(Constants.signUpConfirmedKey);
 
     if (loggedIn || signedUp) {
       log.error("ERROR- The global store indicates that:\n" + "loggedIn = " +
@@ -55,14 +58,39 @@ class SignUpConfirmationState extends State<SignUpConfirmation> {
 
   void confirmSignUp(BuildContext context) async {
     log.info("confirmSignUp(BuildContext context) called.");
+    data = _store.get(Constants.loginDataKey);
+    if (data.name == null) {
+      log.error("data.name is null. THIS SHOULD NOT HAPPEN");
+      Constants.showDialog_UnexpectedError(context);
+      Navigator.pop(context);
+    }
     try {
       SignUpResult res = await Amplify.Auth.confirmSignUp(username: data.name, confirmationCode: enteredCode);
-      log.info("Confirm sign up Successful!");
-      _store.set(Constants.signUpCompleteKey, true);
-      Navigator.pop(context);
+      if(res.isSignUpComplete) {
+        log.info("Confirm sign up Successful!");
+        _store.set(Constants.signUpConfirmedKey, true);
+        //TODO- continue to home page
+        Constants.showInProgressDialog(context);
+      }
+      else {
+        log.error("Sign up incomplete! result: " + res.toString());
+        Constants.showDialog_UnexpectedError(context);
+        _store.set(Constants.signUpConfirmedKey, false);
+        Navigator.pop(context);
+      }
     } on AuthError catch (error) {
-      log.error("Confirm sign up FAILED! error- " + error.toString());
+      List<AuthException> exceptions = error.exceptionList;
+      log.error("Email Confirmation FAILED! AuthError caught. Auth Exceptions:\n");
+      exceptions.forEach((element) {
+        log.error("\t" + element.exception + " Exception- " + element.detail.toString());
+        if (element.exception == 'CODE_MISMATCH') {
+          String message = element.detail.toString();
+          Constants.showDialog_OkayOption(context, "Login Failed!", message);
+          log.info("CODE_MISMATCH error handling complete.");
+        }
+      });
       setState(() {
+        _store.set(Constants.signUpConfirmedKey, false);
         enteredCode = "";
       });
     }
@@ -70,16 +98,24 @@ class SignUpConfirmationState extends State<SignUpConfirmation> {
 
   void resendCode(BuildContext context) async {
     log.info("resendCode(BuildContext context) called.");
+    data = _store.get(Constants.loginDataKey);
+    if (data.name == null) {
+      log.error("data.name is null. THIS SHOULD NOT HAPPEN");
+      Constants.showDialog_UnexpectedError(context);
+      Navigator.pop(context);
+    }
     try {
       ResendSignUpCodeResult res = await Amplify.Auth.resendSignUpCode(username: data.name);
       log.info("Resend sign up code Successful!");
+      Constants.showDialog_OkayOption(context, "New Confirmation Code", "A new confirmation code has be sent to the "
+          "email associated with the account. Please enter code to verify account.");
       setState(() {
         enteredCode = "";
       });
     } on AuthError catch (error) {
-      log.error("Resend sign up code FAILED! error- " + error.toString());
-      Constants.showDialog_CloseOption(context, "Resend sign up code failed!", "ERROR! Failed to resend new sign up "
-          "code- THIS SHOULD NOT HAPPEN!");
+      log.error("Resend sign up code FAILED! THIS SHOULD NOT HAPPEN! error- " + error.toString());
+      Constants.showDialog_UnexpectedError(context);
+      Navigator.pop(context);
     }
   }
 
@@ -124,7 +160,7 @@ class SignUpConfirmationState extends State<SignUpConfirmation> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: GestureDetector(
+        /*leading: GestureDetector(
           onTap: (){
             Navigator.pop(context);
           },
@@ -133,7 +169,7 @@ class SignUpConfirmationState extends State<SignUpConfirmation> {
             size: 30,
             color: Colors.black,
           ),
-        ),
+        ),*/
         title: Text(
           "Sign Up Confirmation",
           style: TextStyle(

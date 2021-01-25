@@ -9,6 +9,9 @@ import 'package:revire/constants/Constants.dart';
 import 'package:revire/constants/GlobalState.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:revire/pages/login/SignUpConfirmation.dart';
+import 'package:revire/theme/MyAppColors.dart';
+import 'package:amazon_cognito_identity_dart_2/cognito.dart';
+import 'package:flutter/services.dart';
 
 class MainLogin extends StatefulWidget {
   MainLogin({Key key}) : super(key: key);
@@ -34,8 +37,8 @@ class MainLoginState extends State<MainLogin> {
   void initState() {
     super.initState();
     log.info("initState() called.");
-    _store.set(Constants.signUpCompleteKey, false);
     _store.set(Constants.loginCompleteKey, false);
+    _store.set(Constants.signUpConfirmedKey, false);
   }
 
   static double getTitleDistanceFromTop(BuildContext context) {
@@ -62,16 +65,32 @@ class MainLoginState extends State<MainLogin> {
         if(loginComplete) {
           log.info("\t Login Complete.");
           _store.set(Constants.loginCompleteKey, true);
+          _store.set(Constants.signUpConfirmedKey, true);
           return null;
         } else {
           log.warn("Login FAILED. SignInResult: \n" + res.toString() + "\n");
           _store.set(Constants.loginCompleteKey, false);
-          return "Login FAILED";
+          Constants.showDialog_UnexpectedError(context);
+          return "Login Failed!";
         }
       //});
-    } catch (error) {
-      log.error("exception caught in [login(LoginData data)] - \n" + error.toString() + "\n");
-      return "Login Failed! Exception caught-\n" + error.toString();
+    } on AuthError catch (error) {
+      List<AuthException> exceptions = error.exceptionList;
+      String ret = "Login Failed!";
+      log.error("Login FAILED! AuthError caught. Auth Exceptions:\n");
+      exceptions.forEach((element) {
+        log.error("\t" + element.exception + " Exception- " + element.detail.toString());
+        if (element.exception == 'AMAZON_CLIENT_EXCEPTION') {
+          String message = element.detail.toString().substring(0, element.detail.toString().indexOf("(")) + "\nPlease sign up a new account.";
+          ret = message;
+        }
+        if (element.exception == 'NOT_AUTHORIZED') {
+          log.error("NOT_AUTHORIZED processing...");
+          String message = element.detail.toString();
+          ret = message;
+        }
+      });
+      return ret;
     }
   }
 
@@ -79,44 +98,42 @@ class MainLoginState extends State<MainLogin> {
     log.info("signUp(LoginData data) called.");
     _store.set(Constants.loginDataKey, data);
     try {
-
       //TODO- Add more user attributes here- like phone #, address, etc.
       Map<String, dynamic> userAttributes = {
-        "email" : data.name,
+        "email": data.name,
       };
       SignUpResult res = await Amplify.Auth.signUp(username: data.name, password: data.password, options:
       CognitoSignUpOptions(userAttributes: userAttributes));
       //setState(() {
-        bool signUpComplete = res.isSignUpComplete;
-
-        if(signUpComplete) {
-          log.info("Sign Up Complete.");
-
-          String attrName = res.nextStep.codeDeliveryDetails.attributeName;
-          String dest = res.nextStep.codeDeliveryDetails.destination;
-          String delivMed = res.nextStep.codeDeliveryDetails.deliveryMedium;
-          log.info("Code delivery details:\n\tattribute name: " + attrName + "\n\tdestination: " + dest + "\n"
-              "\tdelivery medium: " + delivMed);
-          //Map<dynamic, dynamic> items = res.nextStep.additionalInfo;
-          //int itemSize = res.nextStep.additionalInfo.length;
-          //log.info("Additional Info map items [item count = " + itemSize.toString() + "] :");
-          //items.forEach((key, value) => log.info("key- " + key.toString() + ", value- " + value.toString()));
-          
+      bool signUpComplete = res.isSignUpComplete;
+      _store.set(Constants.signUpConfirmedKey, false);
+      if (signUpComplete) {
+        log.info("Sign Up Complete.");
+        return null;
+      } else {
+        log.warn("Sign up FAILED. result: " + res.toString());
+        return "Sign up FAILED!";
+      }
+      //});
+    } on AuthError catch (error) {
+      List<AuthException> exceptions = error.exceptionList;
+      log.error("Sign up Failed! AuthError caught. Auth Exceptions:\n");
+      exceptions.forEach((element) {
+        log.error("\t" + element.exception + " Exception- " + element.detail.toString());
+        if (element.exception == 'USER_NOT_CONFIRMED') {
+          String message = element.detail.toString() + "\nPlease check email for confirmation code.";
+          Constants.showDialog_OkayOption(context, "Sign up Failed!", message);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => SignUpConfirmation()),
           );
-          return null;
-        } else {
-          log.warn("Sign up FAILED.");
-          _store.set(Constants.signUpCompleteKey, false);
-          return "Sign up FAILED";
+        } else if(element.exception == 'USERNAME_EXISTS') {
+          String message = element.detail.toString() + "\nPlease try logging in.";
+          Constants.showDialog_OkayOption(context, "Sign up Failed!", message);
         }
-      //});
-    } on AuthError catch (error) {
-      log.error("Sign up FAILED. cause = " + error.toString());
-      return "Sign up FAILED!";
+      });
     }
+    return "Sign up Failed!";
   }
 
   String validateEmail (String value) {
@@ -148,14 +165,26 @@ class MainLoginState extends State<MainLogin> {
 
     return FlutterLogin(
       logo: "assets/images/baseline_home_work_black_18dp.png",
-      onLogin: login,
-      onSignup: signUp,
+      onLogin: (loginData) {
+        return login(loginData);
+      },
+      onSignup: (loginData) {
+        return signUp(loginData);
+      },
       title: Constants.title,
       emailValidator: (value) {
         return validateEmail(value);
       },
       onSubmitAnimationCompleted: () {
-        Constants.showInProgressDialog(context);
+        if(_store.get(Constants.signUpConfirmedKey) == false) {
+          log.warn("Sign Up Confirmed key is false- re-trying confirmation process...");
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SignUpConfirmation()),
+          );
+        } else {
+          Constants.showInProgressDialog(context);
+        }
         //Navigator.push(
         //  context,
         //  MaterialPageRoute(builder: (context) => MyHomePage()),
@@ -179,85 +208,83 @@ class MainLoginState extends State<MainLogin> {
       //   recoverPasswordDescription: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry',
       //   recoverPasswordSuccess: 'Password rescued successfully',
       //),
-      //theme: LoginTheme(
-      //   primaryColor: MyAppColors.blue2,
-      //   accentColor: MyAppColors.bluegreen1,
-      //   errorColor: Colors.deepOrange,
-      //   titleStyle: TextStyle(
-      //     color: Colors.white,
-      //     fontFamily: 'Quicksand',
-      //     letterSpacing: 4,
-      //   ),
-      //   // beforeHeroFontSize: 50,
-      //   // afterHeroFontSize: 20,
-      //   bodyStyle: TextStyle(
-      //     fontStyle: FontStyle.italic,
-      //     decoration: TextDecoration.underline,
-      //   ),
-      //   textFieldStyle: TextStyle(
-      //     color: Colors.orange,
-      //     shadows: [Shadow(color: Colors.yellow, blurRadius: 2)],
-      //   ),
-      //   buttonStyle: TextStyle(
-      //     fontWeight: FontWeight.w800,
-      //     color: Colors.yellow,
-      //   ),
-      //   cardTheme: CardTheme(
-      //     color: Colors.yellow.shade100,
-      //     elevation: 5,
-      //     margin: EdgeInsets.only(top: 15),
-      //     shape: ContinuousRectangleBorder(
-      //         borderRadius: BorderRadius.circular(100.0)),
-      //   ),
-      //   inputTheme: InputDecorationTheme(
-      //     filled: true,
-      //     fillColor: Colors.purple.withOpacity(.1),
-      //     contentPadding: EdgeInsets.zero,
-      //     errorStyle: TextStyle(
-      //       backgroundColor: Colors.orange,
-      //       color: Colors.white,
-      //     ),
-      //     labelStyle: TextStyle(fontSize: 12),
-      //     enabledBorder: UnderlineInputBorder(
-      //       borderSide: BorderSide(color: Colors.blue.shade700, width: 4),
-      //       borderRadius: inputBorder,
-      //     ),
-      //     focusedBorder: UnderlineInputBorder(
-      //       borderSide: BorderSide(color: Colors.blue.shade400, width: 5),
-      //       borderRadius: inputBorder,
-      //     ),
-      //     errorBorder: UnderlineInputBorder(
-      //       borderSide: BorderSide(color: Colors.red.shade700, width: 7),
-      //       borderRadius: inputBorder,
-      //     ),
-      //     focusedErrorBorder: UnderlineInputBorder(
-      //       borderSide: BorderSide(color: Colors.red.shade400, width: 8),
-      //       borderRadius: inputBorder,
-      //     ),
-      //     disabledBorder: UnderlineInputBorder(
-      //       borderSide: BorderSide(color: Colors.grey, width: 5),
-      //       borderRadius: inputBorder,
-      //     ),
-      //   ),
-      //   buttonTheme: LoginButtonTheme(
-      //     splashColor: Colors.purple,
-      //     backgroundColor: Colors.pinkAccent,
-      //     highlightColor: Colors.lightGreen,
-      //     elevation: 9.0,
-      //     highlightElevation: 6.0,
-      //     shape: BeveledRectangleBorder(
-      //       borderRadius: BorderRadius.circular(10),
-      //     ),
-      //     // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-      //     // shape: CircleBorder(side: BorderSide(color: Colors.green)),
-      //     // shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(55.0)),
-      //   ),
-      //),
+      theme: LoginTheme(
+         primaryColor: Colors.blue,
+         accentColor: Colors.teal,
+         errorColor: Colors.orange,
+         titleStyle: TextStyle(
+           color: Colors.white,
+           fontFamily: 'Quicksand',
+           letterSpacing: 4,
+         ),
+         beforeHeroFontSize: 50,
+         afterHeroFontSize: 50,
+         bodyStyle: TextStyle(
+           fontStyle: FontStyle.italic,
+           decoration: TextDecoration.underline,
+         ),
+         textFieldStyle: TextStyle(
+           color: Colors.teal,
+           //shadows: [Shadow(color: Colors.black, blurRadius: 10)],
+         ),
+         buttonStyle: TextStyle(
+           fontWeight: FontWeight.w800,
+           color: Colors.white,
+         ),
+         cardTheme: CardTheme(
+           color: Colors.white,
+           elevation: 5,
+           margin: EdgeInsets.only(top: 15),
+           shape: ContinuousRectangleBorder(
+               borderRadius: BorderRadius.circular(100.0)),
+         ),
+         inputTheme: InputDecorationTheme(
+           filled: true,
+           fillColor: Colors.black.withOpacity(.2),
+           contentPadding: EdgeInsets.zero,
+           errorStyle: TextStyle(
+             backgroundColor: Colors.white,
+             color: Colors.white,
+           ),
+           labelStyle: TextStyle(fontSize: 15),
+           enabledBorder: UnderlineInputBorder(
+             borderSide: BorderSide(color: Colors.blue.shade700, width: 4),
+             borderRadius: inputBorder,
+           ),
+           focusedBorder: UnderlineInputBorder(
+             borderSide: BorderSide(color: Colors.blue.shade400, width: 5),
+             borderRadius: inputBorder,
+           ),
+           errorBorder: UnderlineInputBorder(
+             borderSide: BorderSide(color: Colors.red.shade700, width: 7),
+             borderRadius: inputBorder,
+           ),
+           focusedErrorBorder: UnderlineInputBorder(
+             borderSide: BorderSide(color: Colors.red.shade400, width: 8),
+             borderRadius: inputBorder,
+           ),
+           disabledBorder: UnderlineInputBorder(
+             borderSide: BorderSide(color: Colors.grey, width: 5),
+             borderRadius: inputBorder,
+           ),
+         ),
+         buttonTheme: LoginButtonTheme(
+           splashColor: Colors.teal,
+           backgroundColor: Colors.teal,
+           highlightColor: Colors.teal,
+           elevation: 9.0,
+           highlightElevation: 6.0,
+           //shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(10),),
+           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+           //shape: CircleBorder(side: BorderSide(color: Colors.green)),
+           //shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(55.0)),
+         ),
+      ),
     );
 
 
       /*Scaffold(
-      backgroundColor: MyAppColors.blue2,
+      backgroundColor: Colors.blue2,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -321,8 +348,8 @@ class MainLoginState extends State<MainLogin> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: <Color>[
-                            MyAppColors.blue1,
-                            MyAppColors.bluegreen1  ,
+                            Colors.blue1,
+                            Colors.bluegreen1  ,
                           ],
                         ),
                       ),
@@ -350,8 +377,8 @@ class MainLoginState extends State<MainLogin> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: <Color>[
-                            MyAppColors.blue1,
-                            MyAppColors.bluegreen1  ,
+                            Colors.blue1,
+                            Colors.bluegreen1  ,
                           ],
                         ),
                       ),
