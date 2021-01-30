@@ -87,7 +87,8 @@ class SignUpConfirmationState extends State<SignUpConfirmation> {
         AndroidDeviceInfo deviceInfo = await deviceInfoPlugin.androidInfo;
         device = deviceInfo.device;
         deviceName = deviceInfo.model;
-        deviceVersion = deviceInfo.version.toString();
+        AndroidBuildVersion buildVersion = deviceInfo.version;
+        deviceVersion = buildVersion.release;
         deviceId = deviceInfo.androidId;
       } else if (Platform.isIOS) {
         IosDeviceInfo deviceInfo = await deviceInfoPlugin.iosInfo;
@@ -103,6 +104,12 @@ class SignUpConfirmationState extends State<SignUpConfirmation> {
       log.error("ERROR! Could not get device details from 'DeviceInfoPlugin'.");
       return null;
     }
+
+    _store.set(Constants.deviceKey, device);
+    _store.set(Constants.deviceNameKey, deviceName);
+    _store.set(Constants.deviceVersionKey, deviceVersion);
+    _store.set(Constants.deviceIdKey, deviceId);
+
     final Map<String, String> deviceDetails = {
       "device":device,
       "deviceName":deviceName,
@@ -127,20 +134,23 @@ class SignUpConfirmationState extends State<SignUpConfirmation> {
       log.info(key + ": " + value);
     });
 
-    return Future.value(true);
-
     try {
       AuthUser user = await Amplify.Auth.getCurrentUser();
       String userId = user.userId;
+      String username = user.username;
 
 
-      //TODO - conintue...
+      //TODO - add 'remembered device' feature for Android/IOS specific code:
+      //TODO For Android: https://docs.amplify.aws/lib/auth/device_features/q/platform/android
+      //TODO For IOS: https://docs.amplify.aws/lib/auth/device_features/q/platform/ios
 
       
 
     } on AuthError catch (error) {
 
     }
+
+    return Future.value(false);
   }
 
   void confirmSignUp(BuildContext context) async {

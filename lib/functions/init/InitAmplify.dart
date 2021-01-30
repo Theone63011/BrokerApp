@@ -23,6 +23,7 @@ class InitAmplify {
 
     try {
       AmplifyAuthCognito authCognito = AmplifyAuthCognito();
+      _store.set(Constants.amplifyAuthCognitoInstanceKey, authCognito);
       amplifyInstance.addPlugin(authPlugins: [authCognito]);
       await amplifyInstance.configure(amplifyconfig);
 

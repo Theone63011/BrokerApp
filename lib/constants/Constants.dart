@@ -15,9 +15,14 @@ class Constants {
   static final String NOTSET = "NOTSET";
   static final String EMPTY = "EMPTY";
   static final String amplifyInstanceKey = "amplifyInstance";
+  static final String amplifyAuthCognitoInstanceKey = "amplifyAuthCognitoInstance";
   static final String signUpConfirmedKey = "signUpConfirmed";
   static final String loginCompleteKey = "loginComplete";
   static final String loginDataKey = "loginData";
+  static final String deviceKey = "device";
+  static final String deviceNameKey = "deviceName";
+  static final String deviceVersionKey = "deviceVersion";
+  static final String deviceIdKey = "deviceId";
 
   static GlobalState _store = GlobalState.instance;
 
