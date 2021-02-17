@@ -1,0 +1,21 @@
+{
+    "appName": "revire",
+    "roleName": "pinpointLambdaRole8f6ea062",
+    "cloudformationPolicyName": "cloudformationPolicy8f6ea062",
+    "cloudWatchPolicyName": "cloudWatchPolicy8f6ea062",
+    "pinpointPolicyName": "pinpointPolicy8f6ea062",
+    "authPolicyName": "pinpoint_amplify_8f6ea062",
+    "unauthPolicyName": "pinpoint_amplify_8f6ea062",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    }
+}

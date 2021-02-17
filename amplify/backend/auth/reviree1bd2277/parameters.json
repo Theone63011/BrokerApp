@@ -1,6 +1,6 @@
 {
     "identityPoolName": "reviree1bd2277_identitypool_e1bd2277",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "reviree1bd2277",
     "userPoolName": "reviree1bd2277_userpool_e1bd2277",
     "autoVerifiedAttributes": [

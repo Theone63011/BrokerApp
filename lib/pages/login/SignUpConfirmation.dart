@@ -14,6 +14,8 @@ import 'package:revire/widgets/NumberPad.dart';
 import 'package:amazon_cognito_identity_dart_2/cognito.dart';
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
 import 'package:device_info/device_info.dart';
+import 'package:revire/pages/introduction/HomePage.dart';
+import 'package:amplify_flutter/amplify.dart';
 
 class SignUpConfirmation extends StatefulWidget {
   SignUpConfirmation({Key key}) : super(key: key);
@@ -146,7 +148,7 @@ class SignUpConfirmationState extends State<SignUpConfirmation> {
 
       
 
-    } on AuthError catch (error) {
+    } on AuthException catch (error) {
 
     }
 
@@ -170,7 +172,10 @@ class SignUpConfirmationState extends State<SignUpConfirmation> {
         if (deviceConfirmationResult) {
           log.info("Device confirmation successful.");
           //TODO- continue to home page
-          Constants.showInProgressDialog(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
         } else {
           log.error("ERROR! Device confirmation FAILED.");
           //TODO- what happens if the device cannot be confirmed?
@@ -181,8 +186,8 @@ class SignUpConfirmationState extends State<SignUpConfirmation> {
         _store.set(Constants.signUpConfirmedKey, false);
         Navigator.pop(context);
       }
-    } on AuthError catch (error) {
-      List<AuthException> exceptions = error.exceptionList;
+    } on AuthException catch (error) {
+      /*List<AuthException> exceptions = error.exceptionList;
       log.error("Email Confirmation FAILED! AuthError caught. Auth Exceptions:\n");
       exceptions.forEach((element) {
         log.error("\t" + element.exception + " Exception- " + element.detail.toString());
@@ -195,7 +200,7 @@ class SignUpConfirmationState extends State<SignUpConfirmation> {
       setState(() {
         _store.set(Constants.signUpConfirmedKey, false);
         enteredCode = "";
-      });
+      });*/
     }
   }
 
@@ -218,10 +223,10 @@ class SignUpConfirmationState extends State<SignUpConfirmation> {
       setState(() {
         enteredCode = "";
       });
-    } on AuthError catch (error) {
-      log.error("Resend sign up code FAILED! THIS SHOULD NOT HAPPEN! error- " + error.toString());
+    } on AuthException catch (error) {
+      /*log.error("Resend sign up code FAILED! THIS SHOULD NOT HAPPEN! error- " + error.toString());
       Constants.showDialog_UnexpectedError(context);
-      Navigator.pop(context);
+      Navigator.pop(context);*/
     }
   }
 

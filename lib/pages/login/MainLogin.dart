@@ -1,5 +1,7 @@
+import 'dart:math';
+
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_core/amplify_core.dart';
+import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:revire/constants/Constants.dart';
 import 'package:revire/constants/GlobalState.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:revire/pages/login/SignUpConfirmation.dart';
+import 'package:revire/pages/introduction/HomePage.dart';
 import 'package:revire/theme/MyAppColors.dart';
 import 'package:amazon_cognito_identity_dart_2/cognito.dart';
 import 'package:flutter/services.dart';
@@ -64,8 +67,35 @@ class MainLoginState extends State<MainLogin> {
 
         if(loginComplete) {
           log.info("\t Login Complete.");
+          AuthUser user = await Amplify.Auth.getCurrentUser();
+          String username = user.username;
+          String userid = user.userId;
+          String name = data.name;
+
+          String securedUserId = Constants.getSecuredString(userid);
+          String securedUserName = Constants.getSecuredString(username);
+          String securedName = Constants.getSecuredString(name);
+          if (securedName == null || securedUserName == null || securedUserId == null) {
+            log.error("ERROR- one of the secured user details is null- THIS SHOULD NOT HAPPEN!\n\tsecuredUserId= " +
+                securedUserId + "\n\tsecuredUserName= " + securedUserName + "\n\tsecuredName= " + securedName);
+            return "Login Failed!";
+          }
+
+          _store.set(Constants.userNameKey, username);
+          _store.set(Constants.nameKey, name);
+          _store.set(Constants.userIdKey, userid);
           _store.set(Constants.loginCompleteKey, true);
           _store.set(Constants.signUpConfirmedKey, true);
+
+
+          log.info("User login complete.\n");
+//              "Logged in User details:" +
+//              "\n\tNON-SECURED UserId= " + userid +
+//              "\n\tSECURED UserId= " + securedUserId +
+//              "\n\tNON-SECURED UserName= " + username +
+//              "\n\tSECURED UserName= " + securedUserName +
+//              "\n\tNON-SECURED UserEmail= " + useremail +
+//              "\n\tSECURED UserEmail= " + securedUserEmail);
           return null;
         } else {
           log.warn("Login FAILED. SignInResult: \n" + res.toString() + "\n");
@@ -74,8 +104,14 @@ class MainLoginState extends State<MainLogin> {
           return "Login Failed!";
         }
       //});
-    } on AuthError catch (error) {
-      List<AuthException> exceptions = error.exceptionList;
+    } on AuthException catch (error) {
+      String errorMessage = error.message;
+      String underlyingException = error.underlyingException;
+      String rawError = error.toString();
+      log.error("Error message: " + errorMessage);
+      log.error("Underlying Exception: " + underlyingException);
+      log.error("Raw error: " + rawError);
+      /*List<AuthException> exceptions = error;
       String ret = "Login Failed!";
       log.error("Login FAILED! AuthError caught. Auth Exceptions:\n");
       exceptions.forEach((element) {
@@ -90,10 +126,11 @@ class MainLoginState extends State<MainLogin> {
           ret = message;
         }
       });
-      return ret;
+      return ret;*/
     }
   }
 
+  //TODO- group this function in with the SignUpConfirmation class- so as to NOT store logindata for security reasons
   Future<String> signUp(LoginData data) async {
     log.info("signUp(LoginData data) called.");
     _store.set(Constants.loginDataKey, data);
@@ -115,8 +152,8 @@ class MainLoginState extends State<MainLogin> {
         return "Sign up FAILED!";
       }
       //});
-    } on AuthError catch (error) {
-      List<AuthException> exceptions = error.exceptionList;
+    } on AuthException catch (error) {
+      /*List<AuthException> exceptions = error.exceptionList;
       log.error("Sign up Failed! AuthError caught. Auth Exceptions:\n");
       exceptions.forEach((element) {
         log.error("\t" + element.exception + " Exception- " + element.detail.toString());
@@ -131,7 +168,7 @@ class MainLoginState extends State<MainLogin> {
           String message = element.detail.toString() + "\nPlease try logging in.";
           Constants.showDialog_OkayOption(context, "Sign up Failed!", message);
         }
-      });
+      });*/
     }
     return "Sign up Failed!";
   }
@@ -183,12 +220,11 @@ class MainLoginState extends State<MainLogin> {
             MaterialPageRoute(builder: (context) => SignUpConfirmation()),
           );
         } else {
-          Constants.showInProgressDialog(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
         }
-        //Navigator.push(
-        //  context,
-        //  MaterialPageRoute(builder: (context) => MyHomePage()),
-        //);
       },
       onRecoverPassword: (name) {
         Constants.showInProgressDialog(context);

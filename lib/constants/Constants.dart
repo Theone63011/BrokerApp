@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:revire/pages/login/MainLogin.dart';
 import 'package:revire/constants/GlobalState.dart';
+import 'dart:math';
 
 class Constants {
 
@@ -14,15 +15,18 @@ class Constants {
   static const String sequenceNumberKey = "sequenceNumber";
   static final String NOTSET = "NOTSET";
   static final String EMPTY = "EMPTY";
-  static final String amplifyInstanceKey = "amplifyInstance";
-  static final String amplifyAuthCognitoInstanceKey = "amplifyAuthCognitoInstance";
   static final String signUpConfirmedKey = "signUpConfirmed";
   static final String loginCompleteKey = "loginComplete";
+  //TODO- remove the storage of logindata as this poses a security risk
   static final String loginDataKey = "loginData";
+  //TODO- all the credentials below should be 'secured'
   static final String deviceKey = "device";
   static final String deviceNameKey = "deviceName";
   static final String deviceVersionKey = "deviceVersion";
   static final String deviceIdKey = "deviceId";
+  static final String userNameKey = "userName";
+  static final String nameKey = "name";
+  static final String userIdKey = "userId";
 
   static GlobalState _store = GlobalState.instance;
 
@@ -33,8 +37,8 @@ class Constants {
     return sequenceNumber;
   }
 
-  static void showInProgressDialog(BuildContext context) {
-    showDialog(
+  static void showInProgressDialog(BuildContext context) async{
+    await showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog (
@@ -54,8 +58,8 @@ class Constants {
     );
   }
 
-  static void showDialog_CloseOption(BuildContext context, String title, String body) {
-    showDialog(
+  static void showDialog_CloseOption(BuildContext context, String title, String body) async{
+    await showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog (
@@ -74,8 +78,8 @@ class Constants {
     );
   }
 
-  static void showDialog_OkayOption(BuildContext context, String title, String body) {
-    showDialog(
+  static void showDialog_OkayOption(BuildContext context, String title, String body) async{
+    await showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog (
@@ -94,8 +98,8 @@ class Constants {
     );
   }
 
-  static void showDialog_UnexpectedError(BuildContext context) {
-    showDialog(
+  static void showDialog_UnexpectedError(BuildContext context) async{
+    await showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog (
@@ -113,6 +117,27 @@ class Constants {
           );
         }
     );
+  }
+
+  static String getSecuredString(String str) {
+    int strlength = str.length;
+    int securedlength = 4;
+    String ret = "";
+    if (strlength < 0) {
+      return null;
+    }
+    if (strlength < 5) {
+      securedlength = (strlength/2).floor();
+    }
+
+    for(int i = 0; i < strlength; i++) {
+      if((strlength - i) <= securedlength) {
+        ret += str[i];
+      } else {
+        ret += "*";
+      }
+    }
+    return ret;
   }
 
 }
